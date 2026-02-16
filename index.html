@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>World Animal Quiz Dashboard</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef2f7;
+}
+header{
+    background:#4CAF50;
+    color:white;
+    text-align:center;
+    padding:20px;
+    font-size:28px;
+}
+#main{
+    display:flex;
+}
+#sidebar{
+    width:220px;
+    background:#333;
+    color:white;
+    height:100vh;
+    overflow-y:auto;
+}
+.category, .animal{
+    padding:15px;
+    border-bottom:1px solid gray;
+    cursor:pointer;
+}
+.category:hover, .animal:hover{
+    background:#4CAF50;
+}
+#content{
+    flex:1;
+    padding:20px;
+    background:white;
+}
+img{
+    width:300px;
+    border-radius:10px;
+}
+button{
+    padding:10px 20px;
+    margin-top:10px;
+    background:#4CAF50;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+button:hover{
+    background:#45a049;
+}
+</style>
+</head>
+<body>
+
+<header>🌎 World Animal Quiz Dashboard</header>
+
+<div id="main">
+    <div id="sidebar">
+        <div class="category" onclick="loadCategory('mammals')">Mammals</div>
+        <div class="category" onclick="loadCategory('birds')">Birds</div>
+        <div class="category" onclick="loadCategory('reptiles')">Reptiles</div>
+        <div class="category" onclick="loadCategory('amphibians')">Amphibians</div>
+        <div class="category" onclick="loadCategory('fish')">Fish</div>
+        <div class="category" onclick="loadCategory('insects')">Insects</div>
+        <div class="category" onclick="loadCategory('marine')">Marine Animals</div>
+    </div>
+    <div id="content">
+        <h2>Welcome!</h2>
+        <p>Select a category to start the animal quiz adventure.</p>
+    </div>
+</div>
+
+<script>
+// Sample animals per category (you can expand to 3,000+ by adding more objects)
+const data = {
+    mammals:[
+        {name:"Lion", img:"https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namibia.jpg", info:"Lions live in Africa. They are strong carnivores.", facts:"Lions are called king of the jungle.", questions:[
+            {q:"Lion is carnivore?",a:"yes"},
+            {q:"Lion lives in Africa?",a:"yes"},
+            {q:"Lion eats grass?",a:"no"},
+            {q:"Lion has mane?",a:"yes"},
+            {q:"Lion can fly?",a:"no"}
+        ]},
+        {name:"Elephant", img:"https://upload.wikimedia.org/wikipedia/commons/3/37/African_Bush_Elephant.jpg", info:"Elephants are the largest land animals.", facts:"Elephants have trunks and excellent memory.", questions:[
+            {q:"Elephant big?",a:"yes"},
+            {q:"Elephant fly?",a:"no"},
+            {q:"Elephant herbivore?",a:"yes"},
+            {q:"Elephant trunk?",a:"yes"},
+            {q:"Elephant small?",a:"no"}
+        ]},
+        {name:"Dog", img:"https://upload.wikimedia.org/wikipedia/commons/d/d9/Collage_of_Nine_Dogs.jpg", info:"Dogs are human companions.", facts:"Dogs are loyal animals.", questions:[
+            {q:"Dog loyal?",a:"yes"},
+            {q:"Dog fly?",a:"no"},
+            {q:"Dog pet?",a:"yes"},
+            {q:"Dog wild?",a:"no"},
+            {q:"Dog human friend?",a:"yes"}
+        ]}
+        // Add more mammals here...
+    ],
+    birds:[
+        {name:"Eagle", img:"https://upload.wikimedia.org/wikipedia/commons/e/e3/Bald_Eagle_Portrait.jpg", info:"Eagles are birds of prey.", facts:"Eagles have excellent vision.", questions:[
+            {q:"Eagle can fly?",a:"yes"},
+            {q:"Eagle carnivore?",a:"yes"},
+            {q:"Eagle small?",a:"no"},
+            {q:"Eagle has claws?",a:"yes"},
+            {q:"Eagle lives in trees?",a:"yes"}
+        ]},
+        {name:"Parrot", img:"https://upload.wikimedia.org/wikipedia/commons/8/86/African_Grey_Parrot.jpg", info:"Parrots are colorful birds.", facts:"Parrots can mimic human speech.", questions:[
+            {q:"Parrot can fly?",a:"yes"},
+            {q:"Parrot speaks?",a:"yes"},
+            {q:"Parrot carnivore?",a:"no"},
+            {q:"Parrot colorful?",a:"yes"},
+            {q:"Parrot lives in Africa?",a:"yes"}
+        ]}
+        // Add more birds here...
+    ],
+    reptiles:[
+        {name:"Crocodile", img:"https://upload.wikimedia.org/wikipedia/commons/1/15/NileCrocodile.jpg", info:"Crocodiles are large reptiles.", facts:"Crocodiles have powerful jaws.", questions:[
+            {q:"Crocodile carnivore?",a:"yes"},
+            {q:"Crocodile can fly?",a:"no"},
+            {q:"Crocodile lives in water?",a:"yes"},
+            {q:"Crocodile big?",a:"yes"},
+            {q:"Crocodile has scales?",a:"yes"}
+        ]}
+    ],
+    amphibians:[
+        {name:"Frog", img:"https://upload.wikimedia.org/wikipedia/commons/3/3f/European_Frog.jpg", info:"Frogs are amphibians.", facts:"Frogs can jump long distances.", questions:[
+            {q:"Frog can jump?",a:"yes"},
+            {q:"Frog lives on land?",a:"yes"},
+            {q:"Frog can fly?",a:"no"},
+            {q:"Frog is amphibian?",a:"yes"},
+            {q:"Frog carnivore?",a:"yes"}
+        ]}
+    ],
+    fish:[
+        {name:"Shark", img:"https://upload.wikimedia.org/wikipedia/commons/5/56/White_shark.jpg", info:"Sharks are ocean predators.", facts:"Sharks have been around millions of years.", questions:[
+            {q:"Shark lives in water?",a:"yes"},
+            {q:"Shark carnivore?",a:"yes"},
+            {q:"Shark can fly?",a:"no"},
+            {q:"Shark has teeth?",a:"yes"},
+            {q:"Shark small?",a:"no"}
+        ]}
+    ],
+    insects:[
+        {name:"Butterfly", img:"https://upload.wikimedia.org/wikipedia/commons/8/86/Monarch_Butterfly_Danaus_plexippus.jpg", info:"Butterflies are insects.", facts:"Butterflies go through metamorphosis.", questions:[
+            {q:"Butterfly can fly?",a:"yes"},
+            {q:"Butterfly has wings?",a:"yes"},
+            {q:"Butterfly carnivore?",a:"no"},
+            {q:"Butterfly small?",a:"yes"},
+            {q:"Butterfly colorful?",a:"yes"}
+        ]}
+    ],
+    marine:[
+        {name:"Dolphin", img:"https://upload.wikimedia.org/wikipedia/commons/9/9f/Common_dolphin_head.jpg", info:"Dolphins are intelligent marine mammals.", facts:"Dolphins communicate using clicks and whistles.", questions:[
+            {q:"Dolphin lives in water?",a:"yes"},
+            {q:"Dolphin can fly?",a:"no"},
+            {q:"Dolphin smart?",a:"yes"},
+            {q:"Dolphin carnivore?",a:"yes"},
+            {q:"Dolphin mammal?",a:"yes"}
+        ]}
+    ]
+};
+
+// State variables
+let currentCategory = "";
+let animalsInCategory = [];
+let currentIndex = 0;
+let score = 0;
+
+// Load category
+function loadCategory(cat){
+    currentCategory = cat;
+    animalsInCategory = data[cat];
+    currentIndex = 0;
+    score = 0;
+    showAnimal();
+}
+
+// Show animal info
+function showAnimal(){
+    let animal = animalsInCategory[currentIndex];
+    document.getElementById("content").innerHTML = `
+        <h2>${animal.name}</h2>
+        <img src="${animal.img}" alt="${animal.name}">
+        <p><b>Info:</b> ${animal.info}</p>
+        <p><b>Facts:</b> ${animal.facts}</p>
+        <button onclick="startQuiz()">Start Quiz</button>
+    `;
+}
+
+// Start quiz
+function startQuiz(){
+    showQuestion();
+}
+
+// Show question
+function showQuestion(){
+    let animal = animalsInCategory[currentIndex];
+    let q = animal.questions[0]; // always first question
+    document.getElementById("content").innerHTML = `
+        <h2>Question ${currentIndex+1}/5</h2>
+        <p>${q.q}</p>
+        <input id="ans">
+        <br>
+        <button onclick="checkAnswer()">Submit</button>
+    `;
+}
+
+// Check answer
+function checkAnswer(){
+    let animal = animalsInCategory[currentIndex];
+    let q = animal.questions[0]; // only 1 question for demo
+    let user = document.getElementById("ans").value.toLowerCase();
+    if(user === q.a) score++;
+    currentIndex++;
+    if(currentIndex < animalsInCategory.length){
+        showAnimal();
+    } else {
+        document.getElementById("content").innerHTML = `
+            <h2>Category Completed!</h2>
+            <p>Your score: ${score}/${animalsInCategory.length}</p>
+            <button onclick="document.getElementById('content').innerHTML='Select another category.'">Back to Dashboard</button>
+        `;
+    }
+}
+</script>
+
+</body>
+</html>
